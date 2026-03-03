@@ -1,0 +1,21 @@
+version: "3.8"
+
+services:
+
+  spark:
+    build: .
+    container_name: spark_loader
+    environment:
+
+      # Existing application database
+      POSTGRES_URL: jdbc:postgresql://host.docker.internal:5432/tlaquanet
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+      # Snowflake
+      SNOWFLAKE_ACCOUNT: ${SNOWFLAKE_ACCOUNT}
+      SNOWFLAKE_USER: ${SNOWFLAKE_USER}
+      SNOWFLAKE_PASSWORD: ${SNOWFLAKE_PASSWORD} 
+      SNOWFLAKE_WAREHOUSE: COMPUTE_WH
+      SNOWFLAKE_DATABASE: TLAQUANET_ANALYTICS
+      SNOWFLAKE_SCHEMA: PUBLIC
