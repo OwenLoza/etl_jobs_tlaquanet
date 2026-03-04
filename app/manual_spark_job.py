@@ -1,8 +1,8 @@
 import os
 from pyspark.sql import SparkSession
 
-def main() -> None:
-
+def main(table:str) -> None:
+    
     spark = (
         SparkSession.builder.appName("Appto_SnowFlake").getOrCreate()
     )
@@ -19,8 +19,8 @@ def main() -> None:
     df = (
         spark.read.jdbc(
             url = jdbc_url,
-            table = "users",
-            properties = connection_properties
+            table=table,
+            properties= connection_properties
         )
     )
 
@@ -38,9 +38,10 @@ def main() -> None:
     }
 
     (
-        df.write.format("snowflake")
+        df.write
+        .format("snowflake")
         .options(**sfOptions)
-        .option("dbtable", "users")
+        .option("dbtable", table)
         .mode("overwrite")
         .save()
     )
@@ -51,4 +52,4 @@ def main() -> None:
     return None
 
 if __name__ == "__main__":
-    main()
+    main("posts")
