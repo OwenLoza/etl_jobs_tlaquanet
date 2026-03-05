@@ -26,6 +26,9 @@ def get_postgres_df(spark, table_name):
         )
 
 def write_to_snowflake(df, table_name, mode="append"):
+    
+    if "author_id" in df.columns:
+        df = df.withColumnRenamed("author_id", "user_id")
     # Write Data to Snowflake
     sfOptions = {
         "sfURL": f"{os.getenv('SNOWFLAKE_ACCOUNT')}.snowflakecomputing.com",
@@ -41,6 +44,7 @@ def write_to_snowflake(df, table_name, mode="append"):
         .format("snowflake")
         .options(**sfOptions)
         .option("dbtable", table_name)
+        .option("column_mapping", "name")
         .mode(mode)
         .save()
     )
