@@ -91,5 +91,3 @@ CREATE OR REPLACE TABLE dim_users (
     to_date TIMESTAMP_TZ,
     is_current BOOLEAN DEFAULT TRUE
 );
-
-
