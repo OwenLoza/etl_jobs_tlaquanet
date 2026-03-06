@@ -1,42 +1,74 @@
--- Snowflake DDL Setup for TlaquaNet Analytics
+-- =====================================================
+-- DATABASE & SCHEMA
+-- =====================================================
+
 CREATE DATABASE IF NOT EXISTS TLAQUANET_ANALYTICS;
 USE DATABASE TLAQUANET_ANALYTICS;
 
 CREATE SCHEMA IF NOT EXISTS PUBLIC;
 USE SCHEMA PUBLIC;
 
--- Fact Tables
-CREATE TABLE IF NOT EXISTS posts (
+
+-- =====================================================
+-- RAW FACT TABLES
+-- =====================================================
+
+-- POSTS  (Postgres order: id, content, author_id, created_at)
+CREATE OR REPLACE TABLE posts (
     id INTEGER,
-    user_id INTEGER,
     content STRING,
+    author_id INTEGER,
     created_at TIMESTAMP_TZ
 );
 
-CREATE TABLE IF NOT EXISTS comments (
+
+-- COMMENTS (Postgres order: id, content, author_id, post_id, created_at)
+CREATE OR REPLACE TABLE comments (
     id INTEGER,
-    post_id INTEGER,
-    user_id INTEGER,
     content STRING,
-    created_at TIMESTAMP_TZ
-);
-
-CREATE TABLE IF NOT EXISTS likes (
-    id INTEGER,
+    author_id INTEGER,
     post_id INTEGER,
-    user_id INTEGER,
     created_at TIMESTAMP_TZ
 );
 
-CREATE TABLE IF NOT EXISTS events (
+
+-- LIKES (Postgres order: id, user_id, post_id, created_at)
+CREATE OR REPLACE TABLE likes (
     id INTEGER,
     user_id INTEGER,
+    post_id INTEGER,
+    created_at TIMESTAMP_TZ
+);
+
+
+-- EVENTS (Postgres order: id, event_type, user_id, target_id, metadata, created_at)
+CREATE OR REPLACE TABLE events (
+    id INTEGER,
     event_type STRING,
-    created_at TIMESTAMP_TZ,
-    metadata VARIANT
+    user_id INTEGER,
+    target_id INTEGER,
+    metadata STRING, 
+    created_at TIMESTAMP_TZ
 );
 
--- Staging Table for Users
+
+-- =====================================================
+-- RAW USERS TABLE
+-- =====================================================
+
+-- Postgres order: id, username, display_name, created_at
+CREATE OR REPLACE TABLE users_raw (
+    id INTEGER,
+    username STRING,
+    display_name STRING,
+    created_at TIMESTAMP_TZ
+);
+
+
+-- =====================================================
+-- STAGING TABLE FOR SCD PROCESSING
+-- =====================================================
+
 CREATE OR REPLACE TABLE stg_users (
     user_id INTEGER,
     username STRING,
@@ -44,8 +76,12 @@ CREATE OR REPLACE TABLE stg_users (
     created_at TIMESTAMP_TZ
 );
 
--- Dimension Table for Users (SCD Type 2)
-CREATE TABLE IF NOT EXISTS dim_users (
+
+-- =====================================================
+-- DIMENSION TABLE (SCD TYPE 2)
+-- =====================================================
+
+CREATE OR REPLACE TABLE dim_users (
     id NUMBER AUTOINCREMENT,
     user_id INTEGER,
     username STRING,
@@ -55,6 +91,5 @@ CREATE TABLE IF NOT EXISTS dim_users (
     to_date TIMESTAMP_TZ,
     is_current BOOLEAN DEFAULT TRUE
 );
-
 
 
