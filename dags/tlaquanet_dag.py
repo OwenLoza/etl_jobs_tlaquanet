@@ -64,4 +64,24 @@ with DAG(
         command='python3 /app/engagement_job.py'
     )
 
-    run_spark_etl >> run_engagement_aggregation
+    # Task 3: Run Sentiment Analysis Job
+    run_sentiment_analysis = DockerOperator(
+        task_id='run_sentiment_analysis',
+        image='etl_jobs_tlaquanet-spark:latest',
+        api_version='auto',
+        auto_remove=True,
+        environment={
+            'SNOWFLAKE_ACCOUNT': '{{ var.value.snowflake_account }}',
+            'SNOWFLAKE_USER': '{{ var.value.snowflake_user }}',
+            'SNOWFLAKE_PASSWORD': '{{ var.value.snowflake_password }}',
+            'SNOWFLAKE_WAREHOUSE': '{{ var.value.snowflake_warehouse }}',
+            'SNOWFLAKE_DATABASE': '{{ var.value.snowflake_database }}',
+            'SNOWFLAKE_SCHEMA': '{{ var.value.snowflake_schema }}',
+        },
+        network_mode='etl_jobs_tlaquanet_default',
+        force_pull=False,
+        mount_tmp_dir=False,
+        command='python3 /app/sentiment_job.py'
+    )
+
+    run_spark_etl >> [run_engagement_aggregation, run_sentiment_analysis]
