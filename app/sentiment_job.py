@@ -1,7 +1,5 @@
 import os
-from app.engagement_job import run_engagement_job
 import snowflake.connector
-
 def run_sentiment_job():
     # Read SQL from file
     sql_path = "/app/sentiment_job.sql"

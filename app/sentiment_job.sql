@@ -1,11 +1,8 @@
 CREATE OR REPLACE TABLE user_sentiment_metrics AS
 WITH  user_sentiment AS (
     select author_id, content, SNOWFLAKE.CORTEX.COMPLETE(
-    'openai-gpt-4.1',
-    CONCAT('TRUE IF COMMENT IS POSITIVE ELSE FALSE', content),
-    SNOWFLAKE.CORTEX.COMPLETE(
-    'mistral',
-    CONCAT('TRUE IF COMMENT IS POSITIVE ELSE FALSE', content)
-) as sentiment_metric from posts;
+        'mistral-large2',
+        CONCAT('Respond with exactly "TRUE" if the comment is overall positive, and "FALSE" otherwise: ', content)
+    ) as sentiment_metric from posts
 )
 SELECT * from user_sentiment;
